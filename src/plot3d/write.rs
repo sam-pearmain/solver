@@ -2,7 +2,7 @@
 
 use std::io::{self, Write, BufWriter};
 use std::fs::File;
-use super::read::Plot3DBlock;
+use super::types::Plot3DBlock;
 
 pub fn write_plot3d_binary(filename: &str, blocks: &[Plot3DBlock], double_precision: bool, big_endian: bool) -> io::Result<()> {
     let file = File::create(filename)?;

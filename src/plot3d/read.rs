@@ -2,16 +2,7 @@
 
 use std::fs::File;
 use std::io::{self, BufRead, BufReader, Lines};
-
-#[derive(Debug)]
-pub struct Plot3DBlock {
-    pub imax: i32, 
-    pub jmax: i32, 
-    pub kmax: i32, 
-    pub x: Vec<f64>,
-    pub y: Vec<f64>,
-    pub z: Vec<f64>,
-}
+use super::types::Plot3DBlock;
 
 pub fn read_plot3d_ascii(filename: &str) -> io::Result<Vec<Plot3DBlock>> {
     if !filename.to_lowercase().ends_with(".xyz") && !filename.to_lowercase().ends_with(".p3d") {
