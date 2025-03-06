@@ -1,4 +1,5 @@
 mod fdm;
+mod grid;
 mod plot3d;
 
 fn main() {
