@@ -31,10 +31,10 @@ impl Block {
     }
 
     pub fn set_x_coordinates(&mut self, x: Vec<f64>) -> Result<(), &'static str> {
-        if self.nx * self.ny * self.nz == 0 {
+        if self.total_grid_points() == 0 {
             return Err("dimensions not set");
         }
-        if x.len() == self.nx {
+        if x.len() == self.total_grid_points() {
             self.x = x;
         } else {
             return Err("x data doesn't match dimensions")
@@ -43,10 +43,10 @@ impl Block {
     }
 
     pub fn set_y_coordinates(&mut self, y: Vec<f64>) -> Result<(), &'static str> {
-        if self.nx * self.ny * self.nz == 0 {
+        if self.total_grid_points() == 0 {
             return Err("dimensions not set");
         }
-        if y.len() == self.nx {
+        if y.len() == self.total_grid_points() {
             self.y = y;
         } else {
             return Err("y data doesn't match dimensions")
@@ -55,10 +55,10 @@ impl Block {
     }
 
     pub fn set_z_coordinates(&mut self, z: Vec<f64>) -> Result<(), &'static str> {
-        if self.nx * self.ny * self.nz == 0 {
+        if self.total_grid_points() == 0 {
             return Err("dimensions not set");
         }
-        if z.len() == self.nz {
+        if z.len() == self.total_grid_points() {
             self.z = z;
         } else {
             return Err("z data doesn't match dimensions")
@@ -84,4 +84,14 @@ impl Block {
         block.set_z_coordinates(p3d_block.z.clone())?;
         Ok(block)
     }
-}   
+
+    fn total_grid_points(&self) -> usize {
+        self.nx * self.ny * self.nz
+    }
+}
+
+impl std::fmt::Display for Block {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "block dimensions ({}, {}, {})", self.nx, self.ny, self.nz)
+    }
+}
