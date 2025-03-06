@@ -2,10 +2,11 @@
 
 use crate::plot3d::read::read_plot3d_ascii;
 
+#[derive(Debug)]
 pub struct Block {
     nx: usize,
     ny: usize,
-    nz: usize, 
+    nz: usize,
     x: Vec<f64>,
     y: Vec<f64>,
     z: Vec<f64>,
@@ -66,7 +67,7 @@ impl Block {
         Ok(())
     }
 
-    pub fn from_plot3d(&mut self, p3d_filepath: &str) -> Result<Self, &'static str> {
+    pub fn from_plot3d(p3d_filepath: &str) -> Result<Self, &'static str> {
         let blocks = read_plot3d_ascii(p3d_filepath)
             .expect("cannot read p3d file");
         if blocks.len() > 1 {
