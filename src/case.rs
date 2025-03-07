@@ -51,9 +51,6 @@ impl Solution {
 
         for i in 0..self.density.len() {
             self.density[i] = density;
-            self.momentum_x[i] = 0.0;
-            self.momentum_y[i] = 0.0;
-            self.momentum_z[i] = 0.0;
             self.energy[i] = total_energy;
         }
         self.initialise_boundaries()?;
@@ -62,14 +59,17 @@ impl Solution {
 
     fn initialise_boundaries(&mut self) -> Result<(), &'static str> {
         // look inside grid to get each boundary condition
-        for boundary_condition in self.grid.boundaries.iter() {
-            self.apply_boundary();
+        for (boundary, boundary_type) in self.grid.boundaries.iter() {
+            match boundary {
+                Boundary::IMax => {}
+                Boundary::IMin => {}
+                Boundary::JMax => {}
+                Boundary::JMin => {}
+                Boundary::KMax => {}
+                Boundary::KMin => {}
+            }
         } 
         
-        todo!()
-    }
-
-    fn apply_boundary(&mut self, boundary_condition: (&Boundary, &mut BoundaryType)) -> Result<(), &'static str> {
         todo!()
     }
 }

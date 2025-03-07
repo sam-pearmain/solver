@@ -1,4 +1,6 @@
-#[derive(Debug, Clone, Copy)]
+#![allow(dead_code)]
+
+#[derive(Debug)]
 pub enum Boundary {
     IMin,
     IMax,
@@ -8,7 +10,7 @@ pub enum Boundary {
     KMax,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug)]
 pub enum BoundaryType {
     Wall,
     VelocityInlet,
