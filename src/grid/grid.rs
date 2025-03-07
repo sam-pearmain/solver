@@ -1,6 +1,8 @@
 #![allow(dead_code)]
 
+use std::collections::HashMap;
 use crate::plot3d::read::read_plot3d_ascii;
+use super::boundary::{Boundary, BoundaryType};
 
 #[derive(Debug)]
 pub struct Block {
@@ -86,7 +88,7 @@ impl Block {
         Ok(block)
     }
 
-    fn total_grid_points(&self) -> usize {
+    pub fn total_grid_points(&self) -> usize {
         self.nx * self.ny * self.nz
     }
 }
@@ -94,5 +96,17 @@ impl Block {
 impl std::fmt::Display for Block {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "block dimensions ({}, {}, {})", self.nx, self.ny, self.nz)
+    }
+}
+
+#[derive(Debug)]
+pub struct Grid {
+    block: Block,
+    boundaries: HashMap<Boundary, BoundaryType>,
+}
+
+impl Grid {
+    pub fn get_total_grid_points(&self) -> usize {
+        self.block.total_grid_points()
     }
 }
