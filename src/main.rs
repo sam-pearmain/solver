@@ -1,5 +1,6 @@
 mod case;
 mod fdm;
+mod fluid;
 mod grid;
 mod plot3d;
 

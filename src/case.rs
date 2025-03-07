@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 use crate::grid::{boundary::{Boundary, BoundaryType}, grid::Grid};
+use crate::fluid::*;
 
 #[derive(Debug, Clone, Copy)]
 pub enum FluidModel {
@@ -13,17 +14,6 @@ pub enum FluidModel {
 #[derive(Debug, Clone, Copy)]
 pub enum NumericalScheme {
     MacCormack,
-}
-
-#[derive(Debug, Clone, Copy)]
-pub enum Fluid {
-    Air {density: f64, gamma: f64, viscosity: f64},
-}
-
-impl Default for Fluid {
-    fn default() -> Self {
-        Fluid::Air { density: 1.225, gamma: 1.4, viscosity: 1.0 }
-    }
 }
 
 #[derive(Debug)]
@@ -52,26 +42,18 @@ impl Solution {
     }
 
     pub fn initialise(&mut self) -> Result<(), &'static str> {
-        let (density, gamma, _) = match self.fluid {
-            Fluid::Air { density, gamma, viscosity } => (density, gamma, viscosity)
-        };
-        let velocity_x: f64 = 0.0;
-        let velocity_y: f64 = 0.0;
-        let velocity_z: f64 = 0.0;
+        let density = self.fluid.density();
+        let gamma = self.fluid.gamma();
         let pressure = 101325.0;
-        let kinetic_energy = 0.5 * density * (
-            velocity_x.powi(2) +
-            velocity_y.powi(2) +
-            velocity_z.powi(2)
-        );
+        let kinetic_energy = 0.0;
         let internal_energy = pressure / (gamma - 1.0);
         let total_energy = kinetic_energy + internal_energy;
 
         for i in 0..self.density.len() {
             self.density[i] = density;
-            self.momentum_x[i] = density * velocity_x;
-            self.momentum_y[i] = density * velocity_y;
-            self.momentum_z[i] = density * velocity_z;
+            self.momentum_x[i] = 0.0;
+            self.momentum_y[i] = 0.0;
+            self.momentum_z[i] = 0.0;
             self.energy[i] = total_energy;
         }
         self.initialise_boundaries()?;
@@ -81,13 +63,13 @@ impl Solution {
     fn initialise_boundaries(&mut self) -> Result<(), &'static str> {
         // look inside grid to get each boundary condition
         for boundary_condition in self.grid.boundaries.iter() {
-            self.apply_boundary(boundary_condition);
+            self.apply_boundary();
         } 
         
         todo!()
     }
 
     fn apply_boundary(&mut self, boundary_condition: (&Boundary, &mut BoundaryType)) -> Result<(), &'static str> {
-
+        todo!()
     }
 }
