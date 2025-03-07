@@ -5,24 +5,39 @@ use crate::plot3d::read::read_plot3d_ascii;
 use super::boundary::{Boundary, BoundaryType};
 
 #[derive(Debug)]
+pub struct Vertex {
+    i: usize, 
+    j: usize, 
+    k: usize, 
+    x: f64,
+    y: f64,
+    z: f64,
+}
+
+impl Vertex {
+    pub fn new(
+        i: usize, j: usize, k: usize,
+        x: f64  , y: f64,   z: f64,
+    ) -> Self {
+        Vertex { i, j, k, x, y, z }
+    }
+}
+
+#[derive(Debug)]
 pub struct Block {
     nx: usize,
     ny: usize,
     nz: usize,
-    x: Vec<f64>,
-    y: Vec<f64>,
-    z: Vec<f64>,
+    vertices: Vec<Vertex>
 }
 
 impl Block {
-    pub fn new() -> Self {
+    fn new() -> Self {
         Block { 
             nx: 0, 
             ny: 0, 
             nz: 0, 
-            x: Vec::new(), 
-            y: Vec::new(), 
-            z: Vec::new(),
+            vertices: Vec::new(),        
         }
     }
 
@@ -33,41 +48,7 @@ impl Block {
         self
     }
 
-    pub fn set_x_coordinates(&mut self, x: Vec<f64>) -> Result<(), &'static str> {
-        if self.total_grid_points() == 0 {
-            return Err("dimensions not set");
-        }
-        if x.len() == self.total_grid_points() {
-            self.x = x;
-        } else {
-            return Err("x data doesn't match dimensions")
-        }
-        Ok(())
-    }
-
-    pub fn set_y_coordinates(&mut self, y: Vec<f64>) -> Result<(), &'static str> {
-        if self.total_grid_points() == 0 {
-            return Err("dimensions not set");
-        }
-        if y.len() == self.total_grid_points() {
-            self.y = y;
-        } else {
-            return Err("y data doesn't match dimensions")
-        }
-        Ok(())
-    }
-
-    pub fn set_z_coordinates(&mut self, z: Vec<f64>) -> Result<(), &'static str> {
-        if self.total_grid_points() == 0 {
-            return Err("dimensions not set");
-        }
-        if z.len() == self.total_grid_points() {
-            self.z = z;
-        } else {
-            return Err("z data doesn't match dimensions")
-        }
-        Ok(())
-    }
+    pub fn initialise_vertices()
 
     pub fn from_plot3d(p3d_filepath: &str) -> Result<Self, &'static str> {
         let blocks = read_plot3d_ascii(p3d_filepath)
