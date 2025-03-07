@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use crate::{grid::grid::Grid, Block};
+use crate::grid::{boundary::{Boundary, BoundaryType}, grid::Grid};
 
 #[derive(Debug, Clone, Copy)]
 pub enum FluidModel {
@@ -38,8 +38,8 @@ pub struct Solution {
 }
 
 impl Solution {
-    pub fn new(grid: Block, fluid: Fluid) -> Self {
-        let n_points = grid.total_grid_points();
+    pub fn new(grid: Grid, fluid: Fluid) -> Self {
+        let n_points = grid.get_total_grid_points();
         Solution {
             grid, 
             fluid, 
@@ -52,6 +52,42 @@ impl Solution {
     }
 
     pub fn initialise(&mut self) -> Result<(), &'static str> {
+        let (density, gamma, _) = match self.fluid {
+            Fluid::Air { density, gamma, viscosity } => (density, gamma, viscosity)
+        };
+        let velocity_x: f64 = 0.0;
+        let velocity_y: f64 = 0.0;
+        let velocity_z: f64 = 0.0;
+        let pressure = 101325.0;
+        let kinetic_energy = 0.5 * density * (
+            velocity_x.powi(2) +
+            velocity_y.powi(2) +
+            velocity_z.powi(2)
+        );
+        let internal_energy = pressure / (gamma - 1.0);
+        let total_energy = kinetic_energy + internal_energy;
+
+        for i in 0..self.density.len() {
+            self.density[i] = density;
+            self.momentum_x[i] = density * velocity_x;
+            self.momentum_y[i] = density * velocity_y;
+            self.momentum_z[i] = density * velocity_z;
+            self.energy[i] = total_energy;
+        }
+        self.initialise_boundaries()?;
+        Ok(())
+    }
+
+    fn initialise_boundaries(&mut self) -> Result<(), &'static str> {
+        // look inside grid to get each boundary condition
+        for boundary_condition in self.grid.boundaries.iter() {
+            self.apply_boundary(boundary_condition);
+        } 
+        
         todo!()
+    }
+
+    fn apply_boundary(&mut self, boundary_condition: (&Boundary, &mut BoundaryType)) -> Result<(), &'static str> {
+
     }
 }

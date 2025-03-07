@@ -102,7 +102,7 @@ impl std::fmt::Display for Block {
 #[derive(Debug)]
 pub struct Grid {
     block: Block,
-    boundaries: HashMap<Boundary, BoundaryType>,
+    pub boundaries: HashMap<Boundary, BoundaryType>,
 }
 
 impl Grid {
