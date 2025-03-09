@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use crate::grid::{boundary::{Boundary, BoundaryType}, grid::Grid};
+use crate::grid::{boundary::Boundary, grid::Grid};
 use crate::fluid::*;
 
 #[derive(Debug, Clone, Copy)]
@@ -59,7 +59,7 @@ impl Solution {
 
     fn initialise_boundaries(&mut self) -> Result<(), &'static str> {
         // look inside grid to get each boundary condition
-        for (boundary, boundary_type) in self.grid.boundaries.iter() {
+        for (boundary, _) in self.grid.boundaries.iter() {
             match boundary {
                 Boundary::IMax => {}
                 Boundary::IMin => {}
