@@ -16,3 +16,9 @@ pub struct Mesh<'a> {
     nodes: Vec<Node>,
     elements: Vec<Element<'a>>
 }
+
+impl Mesh<'_> {
+    pub fn from_vtk(file_path: &str) -> Result<Self, &'static str> {
+        todo!();
+    }
+}
