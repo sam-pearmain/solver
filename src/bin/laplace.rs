@@ -5,7 +5,7 @@ pub enum BasisFunction {
 
 fn main() {
     // choose the basis function: linear or quadratic
-    let basis = BasisFunction::Quadratic; // change as desired
+    let basis = BasisFunction::Linear; // change as desired
 
     match basis {
         BasisFunction::Linear => run_linear_fem(),
