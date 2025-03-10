@@ -1,2 +1,2 @@
-pub mod read;
+pub mod vtk;
 pub mod mesh;
