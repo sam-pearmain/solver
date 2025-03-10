@@ -39,7 +39,7 @@ fn main() {
         k_global[i + 1][i + 1] += k_local[1][1];
     }
 
-    // apply dirichlet boundary conditions: u(0)=0 and u(2)=1
+    // apply dirichlet boundary conditions: u(0) = 0 and u(2) = 1
     let bc_left = 0.0;
     let bc_right = 1.0;
 
