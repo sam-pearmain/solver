@@ -22,33 +22,77 @@ pub struct Node3D {
 }
 
 pub trait Node { 
-    const DIMENSIONS: usize;
-
     fn set_id(&mut self, id: usize); 
+    fn x(&self) -> Option<f64>;
+    fn y(&self) -> Option<f64>;
+    fn z(&self) -> Option<f64>;
+    fn dimensions() -> usize;
 }
 
 impl Node for Node1D { 
-    const DIMENSIONS: usize = 1;
-
     fn set_id(&mut self, id: usize) {
         self.id = id
     } 
-}
 
-impl Node for Node2D { 
-    const DIMENSIONS: usize = 2; 
+    fn x(&self) -> Option<f64> {
+        Some(self.x)
+    }
 
-    fn set_id(&mut self, id: usize) {
-        self.id = id
+    fn y(&self) -> Option<f64> {
+        None
+    }
+
+    fn z(&self) -> Option<f64> {
+        None
+    }
+
+    fn dimensions() -> usize {
+        1
     }
 }
 
-impl Node for Node3D { 
-    const DIMENSIONS: usize = 3;
+impl Node for Node2D { 
+    fn set_id(&mut self, id: usize) {
+        self.id = id
+    }
 
+    fn x(&self) -> Option<f64> {
+        Some(self.x)
+    }
+
+    fn y(&self) -> Option<f64> {
+        Some(self.y)
+    }
+
+    fn z(&self) -> Option<f64> {
+        None
+    }
+
+    fn dimensions() -> usize {
+        2
+    }
+}
+
+impl Node for Node3D {
     fn set_id(&mut self, id: usize) {
         self.id = id
     } 
+
+    fn x(&self) -> Option<f64> {
+        Some(self.x)
+    }
+
+    fn y(&self) -> Option<f64> {
+        Some(self.y)
+    }
+
+    fn z(&self) -> Option<f64> {
+        Some(self.z)
+    }
+
+    fn dimensions() -> usize {
+        3
+    }
 }
 
 impl Node1D {
@@ -75,7 +119,7 @@ pub trait Dimensioned {
 
 impl<T: Node> Dimensioned for T {
     fn dimensions() -> usize {
-        Self::DIMENSIONS
+        Self::dimensions()
     }
 }
 
@@ -93,6 +137,10 @@ impl<T: Node> NodeCollection<T> {
         NodeCollection { nodes: Vec::with_capacity(capacity) }
     }
 
+    pub fn from_nodes(nodes: Vec<T>) -> Self {
+        NodeCollection { nodes }
+    }
+
     pub fn push_node(&mut self, n: T) {
         self.nodes.push(n);
     }
@@ -105,6 +153,36 @@ impl<T: Node> NodeCollection<T> {
 
     pub fn get_n_nodes(&self) -> usize {
         self.nodes.len()
+    }
+
+    pub fn get_x_vec(&self) -> Option<Vec<f64>> {
+        let mut x_vec = Vec::new();
+        for node in self.nodes.iter() {
+            if let Some(x) = node.x() {
+                x_vec.push(x);
+            }
+        }
+        if !x_vec.is_empty() { Some(x_vec) } else { None }
+    }
+
+    pub fn get_y_vec(&self) -> Option<Vec<f64>> {
+        let mut y_vec = Vec::new();
+        for node in self.nodes.iter() {
+            if let Some(y) = node.y() {
+                y_vec.push(y);
+            }
+        }
+        if !y_vec.is_empty() { Some(y_vec) } else { None }
+    }
+
+    pub fn get_z_vec(&self) -> Option<Vec<f64>> {
+        let mut z_vec = Vec::new();
+        for node in self.nodes.iter() {
+            if let Some(z) = node.z() {
+                z_vec.push(z);
+            }
+        }
+        if !z_vec.is_empty() { Some(z_vec) } else { None }
     }
 }
 

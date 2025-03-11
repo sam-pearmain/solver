@@ -4,7 +4,6 @@ use std::fs::File;
 use std::io::{BufRead, BufReader};
 
 pub struct VtkFile {
-    pub version: String,
     pub points: Vec<[f64; 3]>,
     pub cells: Vec<Vec<usize>>,
 }
@@ -14,14 +13,6 @@ impl VtkFile {
         let file = File::open(file_path).map_err(|_| "failed to open file")?;
         let reader = BufReader::new(file);
         let mut lines = reader.lines();
-    
-        // read the first line to get the vtk version info
-        let version = if let Some(line) = lines.next() {
-            let line = line.map_err(|_| "failed to read version line")?;
-            line.trim().to_string()  // e.g., "# vtk DataFile Version 4.2"
-        } else {
-            return Err("file is empty");
-        };
     
         let mut points: Vec<[f64; 3]> = Vec::new();
         let mut cells: Vec<Vec<usize>> = Vec::new();
@@ -84,7 +75,7 @@ impl VtkFile {
                         if tokens.len() < n_nodes_in_cell {
                             return Err("insufficient cell index data");
                         }
-                        let connectivity = tokens[1..(n_nodes_in_cell + 1)].to_vec();
+                        let connectivity = tokens[1..=n_nodes_in_cell].to_vec();
                         cells.push(connectivity);
                     }
                 }
@@ -92,6 +83,6 @@ impl VtkFile {
             }
         }
     
-        Ok(VtkFile { version, points, cells })
+        Ok(VtkFile { points, cells })
     }
 }

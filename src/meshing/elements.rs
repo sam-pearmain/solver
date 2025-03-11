@@ -1,12 +1,13 @@
 #![allow(dead_code)]
 
-use super::nodes::{Node1D, Node2D, Node3D};
+use super::nodes::{Node, Node1D, Node2D, Node3D};
 
 pub trait Element { 
     const DOF: usize;
 
     fn set_id(&mut self, id: usize);
     fn volume(&self) -> f64;
+    fn iter_nodes(&self) -> Box<dyn Iterator<Item = &dyn Node> + '_>;
 }
 
 #[derive(Debug)]
