@@ -2,7 +2,7 @@
 
 use plotters::prelude::*;
 use crate::meshing::vtk::VtkFile;
-use super::{elements::{Element, ElementCollection}, nodes::{Node, Node2D, Node3D, NodeCollection}};
+use super::{elements::{Element, ElementCollection, TriangleElement}, nodes::{Node, Node2D, Node3D, NodeCollection}};
 
 pub struct Mesh<N: Node, E: Element> {
     nodes: NodeCollection<N>,
@@ -79,6 +79,43 @@ impl<E: Element> Mesh<Node2D, E> {
             .build_cartesian_2d(x_min..x_max, y_min..y_max)
             .map_err(|_| "failed to build chart")?;
         chart.configure_mesh().draw().map_err(|_| "failed to draw mesh grid")?;
-        todo!()  
+
+        chart.draw_series(
+            self.nodes.nodes.iter().map(|node| {
+                Circle::new((node.x, node.y), 5, ShapeStyle::from(&BLUE).filled())
+            })
+        ).map_err(|_| "failed to draw nodes")?;
+        
+        // Iterate over every element in the mesh and plot its connectivity.
+        // We assume that self.elements has an .iter() method.
+        for element in self.elements.iter() {
+            // Use the iter_nodes() method to get an iterator over &dyn Node.
+            let points: Vec<(f64, f64)> = element.iter_nodes()
+                .filter_map(|node| match (node.x(), node.y()) {
+                    (Some(x), Some(y)) => Some((x, y)),
+                    _ => None,
+                })
+                .collect();
+                
+            if points.len() >= 2 {
+                let mut polyline = points.clone();
+                // For shapes with more than two nodes, close the polygon.
+                if points.len() > 2 {
+                    polyline.push(points[0]);
+                }
+                chart.draw_series(LineSeries::new(polyline, &RED))
+                    .map_err(|_| "failed to draw element connectivity")?;
+            }
+        }
+        
+        // Present the drawing.
+        root.present().map_err(|_| "failed to present drawing area")?;
+        Ok(())
     } 
+}
+
+impl<'a> Mesh<Node2D, TriangleElement<'a>> {
+    fn build_elements(&mut self) {
+        
+    }
 }

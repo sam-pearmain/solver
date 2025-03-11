@@ -26,7 +26,7 @@ pub trait Node {
     fn x(&self) -> Option<f64>;
     fn y(&self) -> Option<f64>;
     fn z(&self) -> Option<f64>;
-    fn dimensions() -> usize;
+    fn dimensions(&self) -> usize;
 }
 
 impl Node for Node1D { 
@@ -46,7 +46,7 @@ impl Node for Node1D {
         None
     }
 
-    fn dimensions() -> usize {
+    fn dimensions(&self) -> usize {
         1
     }
 }
@@ -68,7 +68,7 @@ impl Node for Node2D {
         None
     }
 
-    fn dimensions() -> usize {
+    fn dimensions(&self) -> usize {
         2
     }
 }
@@ -90,7 +90,7 @@ impl Node for Node3D {
         Some(self.z)
     }
 
-    fn dimensions() -> usize {
+    fn dimensions(&self) -> usize {
         3
     }
 }
@@ -114,18 +114,18 @@ impl Node3D {
 }
 
 pub trait Dimensioned {
-    fn dimensions() -> usize;
+    fn dimensions(&self) -> usize;
 }
 
 impl<T: Node> Dimensioned for T {
-    fn dimensions() -> usize {
-        Self::dimensions()
+    fn dimensions(&self) -> usize {
+        self.dimensions()
     }
 }
 
 #[derive(Debug)]
 pub struct NodeCollection<T: Node> {
-    nodes: Vec<T>,
+    pub nodes: Vec<T>,
 }
 
 impl<T: Node> NodeCollection<T> {
@@ -187,8 +187,8 @@ impl<T: Node> NodeCollection<T> {
 }
 
 impl<T: Node> Dimensioned for NodeCollection<T> {
-    fn dimensions() -> usize {
-        T::dimensions()
+    fn dimensions(&self) -> usize {
+        self.nodes.first().map(|n| n.dimensions()).unwrap_or(0)
     }
 }
 

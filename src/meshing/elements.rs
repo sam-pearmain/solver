@@ -43,6 +43,13 @@ impl Element for LineElement<'_> {
     fn set_id(&mut self, id: usize) {
         self.id = id;
     }
+
+    fn iter_nodes(&self) -> Box<dyn Iterator<Item = &dyn Node> + '_> {
+        Box::new(vec![
+            self.n1 as &dyn Node,
+            self.n2 as &dyn Node, 
+        ].into_iter())
+    }
 }
 
 impl Element for TriangleElement<'_> { 
@@ -56,6 +63,14 @@ impl Element for TriangleElement<'_> {
 
     fn set_id(&mut self, id: usize) {
         self.id = id;
+    }
+
+    fn iter_nodes(&self) -> Box<dyn Iterator<Item = &dyn Node> + '_> {
+        Box::new(vec![
+            self.n1 as &dyn Node, 
+            self.n2 as &dyn Node, 
+            self.n3 as &dyn Node
+        ].into_iter())
     }
 }
 
@@ -82,6 +97,10 @@ impl<T: Element> ElementCollection<T> {
 
     pub fn with_capacity(capacity: usize) -> Self {
         ElementCollection { elements: Vec::with_capacity(capacity) }
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<'_, T> {
+        self.elements.iter()
     }
 
     pub fn push_element(&mut self, e: T) {
