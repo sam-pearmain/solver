@@ -15,6 +15,7 @@ pub struct LineElement<'a> {
     n2: &'a Node1D,
 }
 
+#[derive(Debug)]
 pub struct TriangleElement<'a> {
     id: usize, 
     n1: &'a Node2D, //     n3
@@ -46,6 +47,12 @@ impl<'a> LineElement<'a> {
     }
 }
 
+impl<'a> TriangleElement<'a> {
+    fn new(id: usize, n1: &'a Node2D, n2: &'a Node2D, n3: &'a Node2D) -> Self {
+        Self { id, n1, n2, n3 }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -57,5 +64,14 @@ mod tests {
         let n2 = Node1D::new(1, 2.0);
         let line = LineElement::new(0, &n1, &n2);
         println!("{:?}", line);
+    }
+
+    #[test]
+    fn test_triangle_element_creation() {
+        let n1 = Node2D::new(0, 0.0, 0.0);
+        let n2 = Node2D::new(1, 1.0, 0.0);
+        let n3 = Node2D::new(2, 1.0, 1.0);
+        let tri = TriangleElement::new(0, &n1, &n2, &n3);
+        println!("{:?}", tri);
     }
 }
