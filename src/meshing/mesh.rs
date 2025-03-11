@@ -29,7 +29,7 @@ impl Mesh {
             .filter(|c| c.len() == 3)
             .collect();
 
-        // Create nodes as Rc<Node> from the vtk points (using x and y only)
+        // create nodes as Rc<Node> from the vtk points (using x and y only)
         let nodes: Vec<Rc<Node>> = vtk_file.points.iter().enumerate().map(|(i, p)| {
             Rc::new(Node { id: i, x: p[0], y: p[1] })
         }).collect();
@@ -56,7 +56,7 @@ impl Mesh {
 
         // define output file and drawing area
         let output_file = "mesh.png";
-        let drawing_area = BitMapBackend::new(output_file, (800, 600))
+        let drawing_area = BitMapBackend::new(output_file, (2560, 1440))
             .into_drawing_area();
         drawing_area.fill(&WHITE).map_err(|_| "failed to fill background")?;
 
@@ -81,7 +81,7 @@ impl Mesh {
         // plot all mesh points as blue circles
         chart.draw_series(
             self.nodes.iter().map(|node| {
-                Circle::new((node.x, node.y), 3, ShapeStyle::from(&BLUE).filled())
+                Circle::new((node.x, node.y), 0.5, ShapeStyle::from(&BLACK).filled())
             })
         ).map_err(|_| "failed to draw points")?;
 
@@ -94,7 +94,7 @@ impl Mesh {
                 // complete the triangle by connecting last point to first
                 if pts.len() == 3 {
                     pts.push(pts[0]);
-                    chart.draw_series(LineSeries::new(pts, &RED))
+                    chart.draw_series(LineSeries::new(pts, &BLACK))
                         .map_err(|_| "failed to draw connectivity line")?;
                 }
             }
