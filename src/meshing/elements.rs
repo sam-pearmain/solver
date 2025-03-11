@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use super::nodes::{Node1D, Node2D};
+use super::nodes::{Node1D, Node2D, Node3D};
 
 pub trait Element { 
     const DOF: usize;
@@ -22,6 +22,14 @@ pub struct TriangleElement<'a> {
     n1: &'a Node2D, //     n3
     n2: &'a Node2D, //   /   \
     n3: &'a Node2D, //  n1---n2
+}
+
+pub struct TetrahedralElement<'a> {
+    id: usize, 
+    n1: &'a Node3D,
+    n2: &'a Node3D,
+    n3: &'a Node3D,
+    n4: &'a Node3D,
 }
 
 impl Element for LineElement<'_> { 
@@ -67,25 +75,25 @@ pub struct ElementCollection<T: Element> {
 }
 
 impl<T: Element> ElementCollection<T> {
-    fn new() -> Self {
+    pub fn new() -> Self {
         ElementCollection { elements: Vec::new() }
     }
 
-    fn with_capacity(capacity: usize) -> Self {
+    pub fn with_capacity(capacity: usize) -> Self {
         ElementCollection { elements: Vec::with_capacity(capacity) }
     }
 
-    fn push_element(&mut self, e: T) {
+    pub fn push_element(&mut self, e: T) {
         self.elements.push(e);
     }
 
-    fn sanitise(&mut self) {
+    pub fn sanitise(&mut self) {
         for (i, element) in self.elements.iter_mut().enumerate() {
             element.set_id(i);
         }
     }
 
-    fn get_n_elements(&self) -> usize {
+    pub fn get_n_elements(&self) -> usize {
         self.elements.len()
     }
 }

@@ -85,25 +85,25 @@ pub struct NodeCollection<T: Node> {
 }
 
 impl<T: Node> NodeCollection<T> {
-    fn new() -> Self {
+    pub fn new() -> Self {
         NodeCollection { nodes: Vec::new() }
     }
 
-    fn with_capacity(capacity: usize) -> Self {
+    pub fn with_capacity(capacity: usize) -> Self {
         NodeCollection { nodes: Vec::with_capacity(capacity) }
     }
 
-    fn push_node(&mut self, n: T) {
+    pub fn push_node(&mut self, n: T) {
         self.nodes.push(n);
     }
 
-    fn sanitise(&mut self) {
+    pub fn sanitise(&mut self) {
         for (i, node) in self.nodes.iter_mut().enumerate() {
             node.set_id(i);
         }
     }
 
-    fn get_n_nodes(&self) -> usize {
+    pub fn get_n_nodes(&self) -> usize {
         self.nodes.len()
     }
 }
