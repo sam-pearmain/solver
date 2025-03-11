@@ -18,11 +18,11 @@ pub struct Node3D {
     z:  f64,
 }
 
-pub trait Node {}
+pub trait Node { const DIMENSIONS: usize; }
 
-impl Node for Node1D {}
-impl Node for Node2D {}
-impl Node for Node3D {}
+impl Node for Node1D { const DIMENSIONS: usize = 1; }
+impl Node for Node2D { const DIMENSIONS: usize = 2; }
+impl Node for Node3D { const DIMENSIONS: usize = 3; }
 
 impl Node1D {
     fn new(id: usize, x: f64) -> Self {
@@ -39,5 +39,15 @@ impl Node2D {
 impl Node3D {
     fn new(id: usize, x: f64, y: f64, z: f64) -> Self {
         Self { id, x, y, z }
+    }
+}
+
+pub trait Dimensioned {
+    fn dimensions() -> usize;
+}
+
+impl<T: Node> Dimensioned for T {
+    fn dimensions() -> usize {
+        Self::DIMENSIONS
     }
 }
