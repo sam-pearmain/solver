@@ -1,2 +1,4 @@
 /target
 *.png
+*.p3d
+*.vtk
