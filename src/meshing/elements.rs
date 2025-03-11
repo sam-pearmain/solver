@@ -5,6 +5,7 @@ use super::nodes::{Node1D, Node2D};
 pub trait Element { 
     const DOF: usize;
 
+    fn set_id(&mut self, id: usize);
     fn volume(&self) -> f64;
 }
 
@@ -29,6 +30,10 @@ impl Element for LineElement<'_> {
     fn volume(&self) -> f64 {
         (self.n1.x - self.n2.x).abs()
     }
+
+    fn set_id(&mut self, id: usize) {
+        self.id = id;
+    }
 }
 
 impl Element for TriangleElement<'_> { 
@@ -38,6 +43,10 @@ impl Element for TriangleElement<'_> {
         0.5 * ((self.n1.x * (self.n2.y - self.n3.y)) +
                (self.n2.x * (self.n3.y - self.n1.y)) +
                (self.n3.x * (self.n1.y - self.n2.y))).abs()
+    }
+
+    fn set_id(&mut self, id: usize) {
+        self.id = id;
     }
 }
 
@@ -50,6 +59,34 @@ impl<'a> LineElement<'a> {
 impl<'a> TriangleElement<'a> {
     fn new(id: usize, n1: &'a Node2D, n2: &'a Node2D, n3: &'a Node2D) -> Self {
         Self { id, n1, n2, n3 }
+    }
+}
+
+pub struct ElementCollection<T: Element> {
+    elements: Vec<T>,
+}
+
+impl<T: Element> ElementCollection<T> {
+    fn new() -> Self {
+        ElementCollection { elements: Vec::new() }
+    }
+
+    fn with_capacity(capacity: usize) -> Self {
+        ElementCollection { elements: Vec::with_capacity(capacity) }
+    }
+
+    fn push_element(&mut self, e: T) {
+        self.elements.push(e);
+    }
+
+    fn sanitise(&mut self) {
+        for (i, element) in self.elements.iter_mut().enumerate() {
+            element.set_id(i);
+        }
+    }
+
+    fn get_n_elements(&self) -> usize {
+        self.elements.len()
     }
 }
 

@@ -102,6 +102,16 @@ impl<T: Node> NodeCollection<T> {
             node.set_id(i);
         }
     }
+
+    fn get_n_nodes(&self) -> usize {
+        self.nodes.len()
+    }
+}
+
+impl<T: Node> Dimensioned for NodeCollection<T> {
+    fn dimensions() -> usize {
+        T::dimensions()
+    }
 }
 
 #[cfg(test)]
