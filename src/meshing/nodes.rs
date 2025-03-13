@@ -155,6 +155,10 @@ impl<T: Node> NodeCollection<T> {
         self.nodes.len()
     }
 
+    pub fn get_node(&self, index: usize) -> &T {
+        &self.nodes[index]
+    }
+
     pub fn get_x_vec(&self) -> Option<Vec<f64>> {
         let mut x_vec = Vec::new();
         for node in self.nodes.iter() {

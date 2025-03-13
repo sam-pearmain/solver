@@ -1,39 +1,24 @@
 #![allow(dead_code)]
 
-use super::nodes::{Node, Node1D, Node2D, Node3D};
+use std::{marker::PhantomData, rc::Rc};
+use super::nodes::{Node, Node1D};
 
-pub trait Element { 
-    const DOF: usize;
+pub trait Element<N: Node> { 
+    const DOF: usize; // degrees of freedom
 
     fn set_id(&mut self, id: usize);
     fn volume(&self) -> f64;
-    fn iter_nodes(&self) -> Box<dyn Iterator<Item = &dyn Node> + '_>;
+    fn nodes(&self) -> Vec<Rc<N>>;
 }
 
 #[derive(Debug)]
-pub struct LineElement<'a> {
+pub struct LineElement {
     id: usize, 
-    n1: &'a Node1D,
-    n2: &'a Node1D,
+    n1: Rc<Node1D>,
+    n2: Rc<Node1D>,
 }
 
-#[derive(Debug)]
-pub struct TriangleElement<'a> {
-    id: usize, 
-    n1: &'a Node2D, //     n3
-    n2: &'a Node2D, //   /   \
-    n3: &'a Node2D, //  n1---n2
-}
-
-pub struct TetrahedralElement<'a> {
-    id: usize, 
-    n1: &'a Node3D,
-    n2: &'a Node3D,
-    n3: &'a Node3D,
-    n4: &'a Node3D,
-}
-
-impl Element for LineElement<'_> { 
+impl Element<Node1D> for LineElement { 
     const DOF: usize = 2; 
 
     fn volume(&self) -> f64 {
@@ -44,66 +29,32 @@ impl Element for LineElement<'_> {
         self.id = id;
     }
 
-    fn iter_nodes(&self) -> Box<dyn Iterator<Item = &dyn Node> + '_> {
-        Box::new(vec![
-            self.n1 as &dyn Node,
-            self.n2 as &dyn Node, 
-        ].into_iter())
+    fn nodes(&self) -> Vec<Rc<Node1D>> {
+        vec![self.n1.clone(), self.n2.clone()]
     }
 }
 
-impl Element for TriangleElement<'_> { 
-    const DOF: usize = 3; 
-
-    fn volume(&self) -> f64 {
-        0.5 * ((self.n1.x * (self.n2.y - self.n3.y)) +
-               (self.n2.x * (self.n3.y - self.n1.y)) +
-               (self.n3.x * (self.n1.y - self.n2.y))).abs()
-    }
-
-    fn set_id(&mut self, id: usize) {
-        self.id = id;
-    }
-
-    fn iter_nodes(&self) -> Box<dyn Iterator<Item = &dyn Node> + '_> {
-        Box::new(vec![
-            self.n1 as &dyn Node, 
-            self.n2 as &dyn Node, 
-            self.n3 as &dyn Node
-        ].into_iter())
-    }
-}
-
-impl<'a> LineElement<'a> {
-    fn new(id: usize, n1: &'a Node1D, n2: &'a Node1D) -> Self {
+impl LineElement {
+    pub fn new(id: usize, n1: Rc<Node1D>, n2: Rc<Node1D>) -> Self {
         Self { id, n1, n2 }
     }
 }
 
-impl<'a> TriangleElement<'a> {
-    fn new(id: usize, n1: &'a Node2D, n2: &'a Node2D, n3: &'a Node2D) -> Self {
-        Self { id, n1, n2, n3 }
-    }
-}
-
-pub struct ElementCollection<T: Element> {
+pub struct ElementCollection<N: Node, T: Element<N>> {
     elements: Vec<T>,
+    _phantom: PhantomData<N>
 }
 
-impl<T: Element> ElementCollection<T> {
+impl<N: Node, E: Element<N>> ElementCollection<N, E> {
     pub fn new() -> Self {
-        ElementCollection { elements: Vec::new() }
+        ElementCollection { elements: Vec::new(), _phantom: PhantomData }
     }
 
     pub fn with_capacity(capacity: usize) -> Self {
-        ElementCollection { elements: Vec::with_capacity(capacity) }
+        ElementCollection { elements: Vec::with_capacity(capacity), _phantom: PhantomData }
     }
 
-    pub fn iter(&self) -> std::slice::Iter<'_, T> {
-        self.elements.iter()
-    }
-
-    pub fn push_element(&mut self, e: T) {
+    pub fn push_element(&mut self, e: E) {
         self.elements.push(e);
     }
 
@@ -127,16 +78,7 @@ mod tests {
     fn test_line_element_creation() {
         let n1 = Node1D::new(0, 0.0);
         let n2 = Node1D::new(1, 2.0);
-        let line = LineElement::new(0, &n1, &n2);
+        let line = LineElement::new(0, Rc::new(n1), Rc::new(n2));
         println!("{:?}", line);
-    }
-
-    #[test]
-    fn test_triangle_element_creation() {
-        let n1 = Node2D::new(0, 0.0, 0.0);
-        let n2 = Node2D::new(1, 1.0, 0.0);
-        let n3 = Node2D::new(2, 1.0, 1.0);
-        let tri = TriangleElement::new(0, &n1, &n2, &n3);
-        println!("{:?}", tri);
     }
 }
